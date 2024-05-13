@@ -11,6 +11,10 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     // GatewayIntentBits.MessageContent,
   ],
+  allowedMentions: {
+    parse: ['users', 'roles', 'everyone'],
+    repliedUser: true
+  }
 });
 
 
