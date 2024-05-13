@@ -13,7 +13,10 @@ const client = new Client({
   ],
 });
 
+
+// sets commands from commands folder
 client.commands = new Collection();
+client.tasks = new Collection();
 
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
@@ -37,46 +40,30 @@ for (const folder of commandFolders) {
   }
 }
 
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+// sets events from events folder
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
-  const command = interaction.client.commands.get(interaction.commandName);
+for (const file of eventFiles) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
 
-  if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`);
-    return;
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
   }
+}
 
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({
-        content: "There was an error while executing this command!",
-        ephemeral: true,
-      });
-    } else {
-      await interaction.reply({
-        content: "There was an error while executing this command!",
-        ephemeral: true,
-      });
-    }
-  }
-});
+// sets tasks from tasks folder
+const tasksPath = path.join(__dirname, 'tasks');
+const taskFiles = fs.readdirSync(tasksPath).filter(file => file.endsWith('.js'));
 
-// When the client is ready, run this code (only once).
-// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
-// It makes some properties non-nullable.
-client.once(Events.ClientReady, (readyClient) => {
-  const channel = client.channels.cache.get(testChannelId);
-  if (!channel) return console.error("Channel not found!");
-  channel
-    .send("Hello, world!")
-    .then((message) => console.log(`Sent message: ${message.content}`))
-    .catch(console.error);
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
+for (const file of taskFiles) {
+  const task = require(`./tasks/${file}`);
+  client.tasks.set(task.name, task);
+  task.execute(client);
+}
 
 // Log in to Discord with your client's token
 client.login(token);
