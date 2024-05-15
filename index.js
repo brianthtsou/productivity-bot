@@ -9,14 +9,14 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
     // GatewayIntentBits.MessageContent,
   ],
   allowedMentions: {
-    parse: ['users', 'roles', 'everyone'],
-    repliedUser: true
-  }
+    parse: ["users", "roles", "everyone"],
+    repliedUser: true,
+  },
 });
-
 
 // sets commands from commands folder
 client.commands = new Collection();
@@ -45,8 +45,10 @@ for (const folder of commandFolders) {
 }
 
 // sets events from events folder
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const eventsPath = path.join(__dirname, "events");
+const eventFiles = fs
+  .readdirSync(eventsPath)
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
@@ -60,8 +62,10 @@ for (const file of eventFiles) {
 }
 
 // sets tasks from tasks folder
-const tasksPath = path.join(__dirname, 'tasks');
-const taskFiles = fs.readdirSync(tasksPath).filter(file => file.endsWith('.js'));
+const tasksPath = path.join(__dirname, "tasks");
+const taskFiles = fs
+  .readdirSync(tasksPath)
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of taskFiles) {
   const task = require(`./tasks/${file}`);
