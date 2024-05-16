@@ -1,6 +1,7 @@
 const cron = require("node-cron");
 const { EmbedBuilder } = require("discord.js");
 const { testChannelId, customEmojiIdList } = require("../config.json");
+const weeklyPollMessage = require("../models/weeklyPollMessage");
 
 module.exports = {
   name: "weeklyPollMessage",
@@ -68,6 +69,21 @@ module.exports = {
           for (const emoji of customEmojiIdList) {
             await sentMessage.react(emoji.id);
           }
+
+          const doc = {
+            message_id: sentMessage.id,
+            created_at: new Date(sentMessage.createdTimestamp),
+          };
+
+          const msg = new weeklyPollMessage(doc);
+          msg
+            .save()
+            .then((doc) => {
+              console.log("Document saved:", doc);
+            })
+            .catch((err) => {
+              console.error("Error saving document:", error);
+            });
         } catch (error) {
           console.error("Failed to send message:", error);
         }

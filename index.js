@@ -1,8 +1,9 @@
 // Require the necessary discord.js classes
 const fs = require("node:fs");
 const path = require("node:path");
+const mongoose = require("mongoose");
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
-const { token, testChannelId } = require("./config.json");
+const { token, testChannelId, MONGODB_URI } = require("./config.json");
 
 // Create a new client instance
 const client = new Client({
@@ -17,6 +18,19 @@ const client = new Client({
     repliedUser: true,
   },
 });
+
+mongoose.set("strictQuery", false);
+
+console.log("connecting to", MONGODB_URI);
+
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => {
+    console.log("connected to mongoDB");
+  })
+  .catch((error) => {
+    console.error("error connecitng to mongoDB:", error.message);
+  });
 
 // sets commands from commands folder
 client.commands = new Collection();
