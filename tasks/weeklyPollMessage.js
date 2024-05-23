@@ -39,6 +39,7 @@ module.exports = {
         }
 
         try {
+          // create embed that holds poll message
           const exampleEmbed = new EmbedBuilder()
             .setColor(0x0099ff)
             .setTitle("Weekly Work Tracker")
@@ -61,11 +62,13 @@ module.exports = {
             );
           });
 
+          // send poll message
           const sentMessage = await channel.send({
             content: "Hi!",
             embeds: [exampleEmbed],
           });
 
+          // react with days of week emojis
           for (const emoji of customEmojiIdList) {
             await sentMessage.react(emoji.id);
           }
@@ -76,14 +79,14 @@ module.exports = {
           };
 
           const msg = new weeklyPollMessage(doc);
-          msg
-            .save()
-            .then((doc) => {
-              console.log("Document saved:", doc);
-            })
-            .catch((err) => {
-              console.error("Error saving document:", error);
-            });
+          // msg
+          //   .save()
+          //   .then((doc) => {
+          //     console.log("Document saved:", doc);
+          //   })
+          //   .catch((err) => {
+          //     console.error("Error saving document:", error);
+          //   });
         } catch (error) {
           console.error("Failed to send message:", error);
         }

@@ -85,6 +85,7 @@ for (const file of taskFiles) {
   const task = require(`./tasks/${file}`);
   client.tasks.set(task.name, task);
   task.execute(client);
+  console.log(task.name);
 }
 
 // Log in to Discord with your client's token
