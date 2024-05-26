@@ -4,7 +4,7 @@ const dayCount = require("./dayCount");
 const discordUserSchema = new mongoose.Schema({
   username: String,
   discord_user_id: String,
-  dayCounts: { type: Schema.Types.ObjectId, ref: "DayCount" },
+  day_counts: { type: mongoose.Schema.Types.ObjectId, ref: "DayCount" },
 });
 
 discordUserSchema.set("toJSON", {

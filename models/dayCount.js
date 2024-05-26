@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const dayCountSchema = new Schema({
+const dayCountSchema = new mongoose.Schema({
   sunday_count: { type: Number, default: 0 },
   monday_count: { type: Number, default: 0 },
   tuesday_count: { type: Number, default: 0 },

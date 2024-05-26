@@ -29,7 +29,7 @@ mongoose
     console.log("connected to mongoDB");
   })
   .catch((error) => {
-    console.error("error connecitng to mongoDB:", error.message);
+    console.error("error connecting to mongoDB:", error.message);
   });
 
 // sets commands from commands folder
