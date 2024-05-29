@@ -30,7 +30,7 @@ function getPreviousSundayRange() {
 module.exports = {
   name: "weeklyReactionChecker",
   execute(client) {
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("30 18 * * SUN", async () => {
       const { start, end } = getTimeRangeForSpecificTimestamp(
         "2024-05-26T00:27:55.579Z"
       );

@@ -5,7 +5,7 @@ module.exports = {
   name: "test5minMessage",
   execute(client) {
     cron.schedule(
-      "*/5 * * * *",
+      "0 18 * * SUN",
       async () => {
         const now = new Date();
         const channel = client.channels.cache.get(testChannelId);

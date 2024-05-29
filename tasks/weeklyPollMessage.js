@@ -7,7 +7,7 @@ module.exports = {
   name: "weeklyPollMessage",
   execute(client) {
     cron.schedule(
-      "*/1 * * * *",
+      "0 18 * * SUN",
       async () => {
         console.log("Cron job triggered at", new Date());
         const channel = client.channels.cache.get(testChannelId);
