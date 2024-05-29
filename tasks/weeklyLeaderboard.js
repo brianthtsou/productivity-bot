@@ -1,12 +1,11 @@
 const cron = require("node-cron");
 const { EmbedBuilder } = require("discord.js");
 const { testChannelId, customEmojiIdList } = require("../config.json");
-const weeklyPollMessage = require("../models/weeklyPollMessage");
 const discordUser = require("../models/discordUser");
 const dayCount = require("../models/dayCount");
 
 module.exports = {
-  name: "weeklyPollMessage",
+  name: "overallLeaderboard",
   execute(client) {
     cron.schedule(
       "*/1 * * * *",
@@ -19,21 +18,22 @@ module.exports = {
         }
 
         try {
-          // create embed that holds poll message
+          // create embed that holds leaderboard message
           const leaderboardEmbed = new EmbedBuilder()
             .setColor(0x0099ff)
-            .setTitle("Leaderboard - Days Worked")
+            .setTitle("Leaderboard - Overall Days Worked")
             // Additional properties of the embed
-            .setDescription("See who is in the lead for most days worked!")
+            .setDescription(
+              "See who is in the lead for most days worked overall!"
+            )
             .setTimestamp()
             .setFooter({ text: "Leaderboard updated weekly!" });
 
           const allUsers = await discordUser.find({});
           const userTotalCountDictArray = [];
           const userDayCount = await dayCount.findById(allUsers[0].day_counts);
-          //   console.log(userDayCount);
-          //   console.log(userDayCount["total_count"]);
 
+          // sort all users in descending order of total_count
           for (let index = 0; index < allUsers.length; index++) {
             let user = allUsers[index];
             let userDayCount = await dayCount.findById(user.day_counts);
@@ -55,44 +55,34 @@ module.exports = {
             return obj2.total_count - obj1.total_count; // Reverse the order for descending
           });
 
-          console.log(userTotalCountDictArray);
-          //   dates.forEach((date, index) => {
-          //     const dayOfWeekEmoji = `<:${customEmojiIdList[index].name}:${customEmojiIdList[index].id}>`;
-          //     exampleEmbed.addFields(
-          //       {
-          //         name: `${daysOfWeek[index]}  ${dayOfWeekEmoji}`,
-          //         value: date,
-          //         inline: false,
-          //       }
-          //       //   { name: "\u200B", value: "\u200B", inline: true }
-          //     );
-          //   });
+          // add names and values to leaderboard
+          const medalEmojiList = [
+            `:first_place:`,
+            `:second_place:`,
+            `:third_place:`,
+          ];
+          userTotalCountDictArray.forEach((user, index) => {
+            let embedNameString;
+            if (index >= 0 && index < 3) {
+              embedNameString = `${medalEmojiList[index]} - ${user.username}`;
+            } else {
+              embedNameString = `${index + 1}.  ${user.username}`;
+            }
+            leaderboardEmbed.addFields(
+              {
+                name: embedNameString,
+                value: `${user.total_count}`,
+                inline: false,
+              }
+              //   { name: "\u200B", value: "\u200B", inline: true }
+            );
+          });
 
-          //   // send poll message
-          //   const sentMessage = await channel.send({
-          //     content: "Hi!",
-          //     embeds: [exampleEmbed],
-          //   });
-
-          //   // react with days of week emojis
-          //   for (const emoji of customEmojiIdList) {
-          //     await sentMessage.react(emoji.id);
-          //   }
-
-          //   const doc = {
-          //     message_id: sentMessage.id,
-          //     created_at: new Date(sentMessage.createdTimestamp),
-          //   };
-
-          //   const msg = new weeklyPollMessage(doc);
-          //   // msg
-          //   //   .save()
-          //   .then((doc) => {
-          //     console.log("Document saved:", doc);
-          //   })
-          //   .catch((err) => {
-          //     console.error("Error saving document:", error);
-          //   });
+          // send leaderboard message
+          const sentMessage = await channel.send({
+            content: "Leaderboard",
+            embeds: [leaderboardEmbed],
+          });
         } catch (error) {
           console.error("Failed to send message:", error);
         }
