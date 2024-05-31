@@ -40,7 +40,7 @@ module.exports = {
 
         try {
           // create embed that holds poll message
-          const exampleEmbed = new EmbedBuilder()
+          const pollEmbed = new EmbedBuilder()
             .setColor(0x0099ff)
             .setTitle("Weekly Work Tracker")
             // Additional properties of the embed
@@ -52,7 +52,7 @@ module.exports = {
 
           dates.forEach((date, index) => {
             const dayOfWeekEmoji = `<:${customEmojiIdList[index].name}:${customEmojiIdList[index].id}>`;
-            exampleEmbed.addFields(
+            pollEmbed.addFields(
               {
                 name: `${daysOfWeek[index]}  ${dayOfWeekEmoji}`,
                 value: date,
@@ -64,8 +64,8 @@ module.exports = {
 
           // send poll message
           const sentMessage = await channel.send({
-            content: "Hi!",
-            embeds: [exampleEmbed],
+            content: "@everyone",
+            embeds: [pollEmbed],
           });
 
           // react with days of week emojis
@@ -79,14 +79,14 @@ module.exports = {
           };
 
           const msg = new weeklyPollMessage(doc);
-          // msg
-          //   .save()
-          //   .then((doc) => {
-          //     console.log("Document saved:", doc);
-          //   })
-          //   .catch((err) => {
-          //     console.error("Error saving document:", error);
-          //   });
+          msg
+            .save()
+            .then((doc) => {
+              console.log("Document saved:", doc);
+            })
+            .catch((err) => {
+              console.error("Error saving document:", error);
+            });
         } catch (error) {
           console.error("Failed to send message:", error);
         }

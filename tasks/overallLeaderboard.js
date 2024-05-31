@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const { EmbedBuilder } = require("discord.js");
-const { testChannelId, customEmojiIdList } = require("../config.json");
+const { testChannelId } = require("../config.json");
 const discordUser = require("../models/discordUser");
 const dayCount = require("../models/dayCount");
 
@@ -8,7 +8,7 @@ module.exports = {
   name: "overallLeaderboard",
   execute(client) {
     cron.schedule(
-      "*/1 * * * *",
+      "* * * * SUN",
       async () => {
         console.log("Cron job triggered at", new Date());
         const channel = client.channels.cache.get(testChannelId);
@@ -80,7 +80,7 @@ module.exports = {
 
           // send leaderboard message
           const sentMessage = await channel.send({
-            content: "Leaderboard",
+            content: "Statistics so far:",
             embeds: [leaderboardEmbed],
           });
         } catch (error) {

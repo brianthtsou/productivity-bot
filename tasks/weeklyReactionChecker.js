@@ -30,7 +30,7 @@ function getPreviousSundayRange() {
 module.exports = {
   name: "weeklyReactionChecker",
   execute(client) {
-    cron.schedule("30 18 * * SUN", async () => {
+    cron.schedule("* * * * *", async () => {
       const { start, end } = getTimeRangeForSpecificTimestamp(
         "2024-05-26T00:27:55.579Z"
       );
@@ -38,12 +38,12 @@ module.exports = {
       const lastPoll = await weeklyPollMessage.findOne({
         created_at: { $gte: start, $lte: end },
       });
-      console.log(lastPoll);
+
       if (!lastPoll) {
         console.log("No poll message found!");
         return;
       }
-      console.log("reached!1");
+
       const dayFields = [
         "sunday_count",
         "monday_count",
@@ -60,24 +60,22 @@ module.exports = {
       const reactionsArray = Array.from(
         lastPollMessage.reactions.cache.values()
       );
-      console.log("reached!2");
+
       for (let index = 0; index < reactionsArray.length; index++) {
-        // const emojiName = reaction._emoji.name;
-        // const emojiCount = reaction.count;
         const dayField = dayFields[index];
         const reactionUsers = await reactionsArray[index].users.fetch();
-        console.log("reached!3");
         for (const rxnUser of reactionUsers.values()) {
+          if (rxnUser.bot === true) {
+            continue;
+          }
           let user = await discordUser.findOne({
             discord_user_id: rxnUser.id,
           });
 
-          console.log("reached!4");
           if (!user) {
             try {
               const newDayCount = new dayCount();
               await newDayCount.save();
-              console.log("reached!5");
               const doc = {
                 discord_user_id: rxnUser.id,
                 username: rxnUser.username,
@@ -85,7 +83,6 @@ module.exports = {
               };
               user = new discordUser(doc);
               await user.save();
-              console.log("reached!6");
               console.log("New user saved:", user);
             } catch (error) {
               console.error("Error saving new user:", error);
@@ -94,15 +91,12 @@ module.exports = {
 
           if (dayField && user) {
             const userDayCount = await dayCount.findById(user.day_counts);
-            console.log("reached!7");
             if (userDayCount) {
               userDayCount[dayField] += 1;
               await userDayCount.save();
-              console.log("reached!8");
             }
           }
         }
-        console.log("reached!all");
       }
     });
   },
