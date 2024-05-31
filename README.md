@@ -23,14 +23,18 @@ Productivity-Bot is a Discord bot built with Node.js and Discord.js. It helps tr
 
 1. **Clone the Repository**
    git clone https://github.com/yourusername/weekly-tracker-discord-bot.git
+
+   ```bash / powershell
    cd weekly-tracker-discord-bot
 
    ```
 
-   ```
-
 2. **Install Dependencies**
+
+   ```bash / powershell
    npm install
+
+   ```
 
 3. **Configure Your Bot**
    Create a `config.json` file in the root directory (or set environment variables for sensitive data):
